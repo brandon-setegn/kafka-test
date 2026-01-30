@@ -18,8 +18,8 @@
   - ✅ Fixed image version issue (changed from `latest` to `7.5.0` for Zookeeper compatibility)
   - ✅ Kafka API versions command executed successfully
   - ✅ Topic creation and listing commands executed successfully
-- [ ] 2.3 Test that `docker-compose down` stops services cleanly
-  - ⚠️  Can be tested when ready to stop services (not blocking)
+- [x] 2.3 Test that `docker-compose down` stops services cleanly
+  - ✅ Verified: docker compose down stops and removes containers cleanly
 - [x] 2.4 Verify data persistence (if volumes are configured)
   - ✅ Volumes configured in docker-compose.yml (zookeeper-data, zookeeper-logs, kafka-data)
   - ✅ Volume persistence confirmed by Docker Compose volume configuration

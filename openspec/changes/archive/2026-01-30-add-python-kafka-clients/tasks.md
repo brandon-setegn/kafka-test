@@ -30,9 +30,9 @@
 - [x] 4.5 Document virtual environment creation and activation steps
 
 ## 5. Validation
-- [ ] 5.1 Test producer can connect to local Kafka broker
-- [ ] 5.2 Test producer can send messages to a topic
-- [ ] 5.3 Test consumer can connect to local Kafka broker
-- [ ] 5.4 Test consumer can read messages from a topic
-- [ ] 5.5 Test end-to-end: producer sends message, consumer receives it
-- [ ] 5.6 Verify error handling when Kafka broker is not running
+- [x] 5.1 Test producer can connect to local Kafka broker
+- [x] 5.2 Test producer can send messages to a topic
+- [x] 5.3 Test consumer can connect to local Kafka broker
+- [x] 5.4 Test consumer can read messages from a topic
+- [x] 5.5 Test end-to-end: producer sends message, consumer receives it
+- [x] 5.6 Verify error handling when Kafka broker is not running
