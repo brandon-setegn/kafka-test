@@ -90,7 +90,9 @@ def delivery_callback(err, msg):
         print(f'Message delivery failed: {err}')
         raise KafkaException(f"Message delivery failed: {err}")
     else:
-        print(f'Message delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}')
+        ts_type, ts_ms = msg.timestamp()
+        ts_str = f' (timestamp: {ts_ms})' if ts_type and ts_ms else ''
+        print(f'Message delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}{ts_str}')
 
 
 def main():
@@ -100,12 +102,9 @@ def main():
         producer = create_producer()
         print("Producer created successfully")
         
-        # Example: Send a message
+        # Example: Send a message (Kafka attaches CreateTime timestamp automatically)
         topic = os.getenv('KAFKA_TOPIC', 'test-topic')
-        message = {
-            'message': 'Hello, Kafka!',
-            'timestamp': '2024-01-01T00:00:00Z'
-        }
+        message = {'message': 'Hello, Kafka!'}
         
         print(f"Producing message to topic '{topic}': {message}")
         produce_message(producer, topic, message)

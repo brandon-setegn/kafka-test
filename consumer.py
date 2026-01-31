@@ -3,11 +3,13 @@
 Kafka Consumer Client
 
 A simple Kafka consumer that reads JSON messages from topics on the local broker.
+Uses Kafka message timestamp (CreateTime/LogAppendTime) for when the message was produced.
 """
 
 import json
 import os
 import sys
+from datetime import datetime
 from confluent_kafka import Consumer
 from confluent_kafka import KafkaException, KafkaError
 
@@ -53,7 +55,8 @@ def consume_messages(consumer, topics, timeout=1.0, max_messages=None):
         max_messages: Maximum number of messages to consume (None for unlimited)
     
     Yields:
-        Tuple of (topic, partition, offset, deserialized_message_dict)
+        Tuple of (topic, partition, offset, timestamp_ms, deserialized_message_dict).
+        timestamp_ms is from Kafka (CreateTime or LogAppendTime), or None if not available.
     """
     # Convert single topic to list
     if isinstance(topics, str):
@@ -104,7 +107,11 @@ def consume_messages(consumer, topics, timeout=1.0, max_messages=None):
             
             message_count += 1
             
-            yield (msg.topic(), msg.partition(), msg.offset(), value_dict)
+            # Kafka timestamp: (timestamp_type, timestamp_ms); type 1=CreateTime, 2=LogAppendTime
+            ts_type, ts_ms = msg.timestamp()
+            timestamp_ms = ts_ms if ts_type else None
+            
+            yield (msg.topic(), msg.partition(), msg.offset(), timestamp_ms, value_dict)
             
     except KeyboardInterrupt:
         print("\nConsumer interrupted by user")
@@ -126,8 +133,12 @@ def main():
         print(f"Consuming messages from topic '{topic}'...")
         print("Press Ctrl+C to stop\n")
         
-        for topic_name, partition, offset, message in consume_messages(consumer, topic, max_messages=10):
-            print(f"Received message from {topic_name}[{partition}] at offset {offset}:")
+        for topic_name, partition, offset, timestamp_ms, message in consume_messages(consumer, topic, max_messages=10):
+            ts_str = ""
+            if timestamp_ms is not None:
+                dt = datetime.fromtimestamp(timestamp_ms / 1000.0)  # local time
+                ts_str = f" (produced: {dt.strftime('%b %d, %Y at %I:%M:%S %p')})"
+            print(f"Received message from {topic_name}[{partition}] at offset {offset}{ts_str}:")
             print(f"  {json.dumps(message, indent=2)}")
             print()
         
